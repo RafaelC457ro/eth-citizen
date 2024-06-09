@@ -1,5 +1,7 @@
 # ETH Citizen
 
+[Live Demo](https://eth-citizen.netlify.app/)
+
 ## Overview
 
 ETH Citizen is a decentralized application (dApp) built using React and Vite, leveraging the Ethereum blockchain to store and retrieve citizen information. This application interacts directly with a deployed smart contract on the Sepolia testnet, allowing users to view a list of citizens and add new citizens to the registry. Metamask is used for managing transactions and signing them with the user's wallet.
