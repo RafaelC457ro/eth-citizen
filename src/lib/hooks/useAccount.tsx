@@ -37,17 +37,19 @@ export function AccountProvider({ children, chainId }: MetaMaskProviderProps) {
   const checkConnection = useCallback(async () => {
     if (walletIsAvailable) {
       const provider = new Web3(window.ethereum)
-      const accounts = await provider.eth.getAccounts()
-      if (accounts.length > 0) {
-        const currentChainId = await provider.eth.getChainId()
-        const desiredChainId = BigInt(chainId)
-        if (currentChainId === desiredChainId) {
+      const currentChainId = await provider.eth.getChainId()
+      const desiredChainId = BigInt(chainId)
+
+      if (currentChainId === desiredChainId) {
+        const accounts = await provider.eth.getAccounts()
+
+        if (accounts.length > 0) {
           setAccount(accounts[0])
           setConnected(true)
-        } else {
-          setConnected(false)
-          setError('Wrong network')
         }
+      } else {
+        setConnected(false)
+        setError('Wrong network')
       }
     }
   }, [chainId, walletIsAvailable])
