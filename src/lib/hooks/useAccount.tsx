@@ -7,7 +7,6 @@ import {
   ReactNode
 } from 'react'
 import Web3 from 'web3'
-import { set } from 'zod'
 
 interface AccountProviderContextType {
   connect: () => Promise<void>
