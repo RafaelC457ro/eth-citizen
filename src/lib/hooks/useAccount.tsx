@@ -7,6 +7,7 @@ import {
   ReactNode
 } from 'react'
 import Web3 from 'web3'
+import { set } from 'zod'
 
 interface AccountProviderContextType {
   connect: () => Promise<void>
@@ -15,7 +16,6 @@ interface AccountProviderContextType {
   connected: boolean
   walletIsAvailable: boolean
   networkError: string | null
-  checkConnection: () => Promise<void>
 }
 
 const MetaMaskContext = createContext<AccountProviderContextType | undefined>(
@@ -34,29 +34,51 @@ export function AccountProvider({ children, chainId }: MetaMaskProviderProps) {
 
   const walletIsAvailable = typeof window.ethereum !== 'undefined'
 
-  const checkConnection = useCallback(async () => {
-    if (walletIsAvailable) {
+  useEffect(() => {
+    const checkConnection = async () => {
       const provider = new Web3(window.ethereum)
-      const currentChainId = await provider.eth.getChainId()
-      const desiredChainId = BigInt(chainId)
 
-      if (currentChainId === desiredChainId) {
-        const accounts = await provider.eth.getAccounts()
+      const accounts = await provider.eth.getAccounts()
 
-        if (accounts.length > 0) {
-          setAccount(accounts[0])
-          setConnected(true)
-        }
-      } else {
-        setConnected(false)
-        setError('Wrong network')
+      if (accounts.length > 0) {
+        setAccount(accounts[0])
+        setConnected(true)
       }
     }
-  }, [chainId, walletIsAvailable])
+    if (walletIsAvailable) {
+      checkConnection()
+    }
+  }, [walletIsAvailable, chainId])
 
   useEffect(() => {
-    checkConnection()
-  }, [checkConnection, walletIsAvailable])
+    const getChainId = async () => {
+      const provider = new Web3(window.ethereum)
+      const currentChainId = await provider.eth.getChainId()
+
+      if (BigInt(chainId) !== currentChainId) {
+        setError('Wrong network')
+        setConnected(false)
+        setAccount(null)
+      } else {
+        setError(null)
+        setConnected(true)
+      }
+    }
+
+    if (walletIsAvailable) {
+      getChainId()
+    }
+
+    const chainListener = () => {
+      getChainId()
+    }
+
+    window.ethereum!.on('chainChanged', chainListener)
+
+    return () => {
+      window.ethereum!.removeListener('chainChanged', chainListener)
+    }
+  }, [walletIsAvailable, chainId])
 
   const connect = useCallback(async () => {
     if (window.ethereum !== undefined) {
@@ -89,7 +111,6 @@ export function AccountProvider({ children, chainId }: MetaMaskProviderProps) {
         walletIsAvailable,
         account,
         connected,
-        checkConnection,
         networkError: error
       }}
     >

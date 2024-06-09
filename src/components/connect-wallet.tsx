@@ -19,7 +19,7 @@ export function ConnectWallet() {
     return null
   }
 
-  if (account) {
+  if (account && !networkError) {
     return (
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
