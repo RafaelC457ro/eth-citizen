@@ -12,6 +12,7 @@ ETH Citizen is a decentralized application (dApp) built using React and Vite, le
 - **web3.js**: A JavaScript library for interacting with the Ethereum blockchain.
 - **TypeScript**: A statically typed superset of JavaScript.
 - **npm**: Node package manager for managing project dependencies.
+- **tailwindcss**: A utility-first CSS framework for rapidly building custom designs.
 
 ## Smart Contract Details
 
